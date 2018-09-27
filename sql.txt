@@ -1,0 +1,101 @@
+DROP DATABASE IF EXISTS online_course;
+CREATE DATABASE online_course CHAR SET UTF8;
+USE online_course;
+
+CREATE TABLE teacher(
+	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(45) NOT NULL,
+    last_name VARCHAR(45) NOT NULL,
+    email VARCHAR(60) NOT NULL UNIQUE,
+    age INT
+);
+
+CREATE TABLE course(
+	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(100) NOT NULL UNIQUE,
+    price DECIMAL(5,2), # 999,99
+    description TEXT,
+    teacher_id INT NOT NULL
+);
+
+CREATE TABLE student(
+	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(45) NOT NULL,
+    last_name VARCHAR(45) NOT NULL
+);
+
+CREATE TABLE student_course(
+	student_id INT NOT NULL,
+    course_id INT NOT NULL,
+    PRIMARY KEY(student_id, course_id)
+);
+
+ALTER TABLE course ADD foreign key (teacher_id) REFERENCES teacher(id);
+ALTER TABLE student_course ADD 
+	foreign key (student_id) REFERENCES student(id);
+    
+ALTER TABLE student_course ADD 
+	foreign key (course_id) REFERENCES course(id);
+
+
+INSERT INTO teacher(first_name, last_name, email, age)
+VALUES 
+('John', 'Doe', 'john@gmail.com', 34),
+('Tom', 'Thompson', 'tommy@gmail,com', 25),
+('Jack', 'Jackson', 'jack@gmail.com', 30),
+('Teacher_f1', 'Teacher_l1', 'teacher1@gmail.com', 20),
+('Teacher_f2', 'Teacher_l2', 'teacher2@gmail.com', 21),
+('Teacher_f3', 'Teacher_l3', 'teacher3@gmail.com', 22),
+('Teacher_f4', 'Teacher_l4', 'teacher4@gmail.com', 23),
+('Teacher_f5', 'Teacher_l5', 'teacher5@gmail.com', 26),
+('Teacher_f6', 'Teacher_l6', 'teacher6@gmail.com', 29);
+
+INSERT INTO course(title, price, description, teacher_id)
+VALUES
+('MySQL', '99.99', 'Empty ...', 3),
+('Spring', '199.99', 'Empty ...', 5),
+('Jpa', 299.99, 'Empty ...', 8),
+('Hibernate', '399.99', 'Empty ...', 3),
+('Angular', '499.99', 'Empty ...', 2),
+('Jquery', 599.99, 'Empty ...', 5),
+('OS Linux', '49.99', 'Empty ...', 7),
+('Java', 59.99, 'Empty ...', 8),
+('Pava', 59.99, 'Empty ...', 8),
+('Lava', 59.99, 'Empty ...', 9),
+('C#', '69.99', 'Empty ...', 1);
+
+INSERT INTO student(first_name, last_name)
+VALUES
+('student_f1', 'student_l1'),
+('student_f2', 'student_l2'),
+('student_f3', 'student_l3'),
+('student_f4', 'student_l4'),
+('student_f5', 'student_l5'),
+('student_f6', 'student_l6');
+
+INSERT INTO student_course(student_id, course_id)
+VALUES
+(1, 3), (2, 4), (1, 6), (6, 9), (3, 4);
+
+SELECT * FROM course;
+SELECT * FROM course WHERE price <= 299.99;
+SELECT * FROM course ORDER BY title DESC; #ASC
+SELECT * FROM course WHERE price BETWEEN 50 AND 400;
+SELECT * FROM course WHERE title LIKE '%a';
+SELECT * FROM course WHERE title LIKE 'j%';
+SELECT * FROM course WHERE title LIKE '%j%';
+SELECT * FROM course WHERE title LIKE '___a';
+SELECT * FROM course WHERE id = 5;
+SELECT * FROM course WHERE id IN (3, 4, 7, 9, 12, 45, 56, 78, 568);
+
+SELECT c.title, c.price FROM course c;
+
+SELECT * FROM course c RIGHT JOIN teacher t ON c.teacher_id = t.id;
+
+SELECT * FROM student_course;
+
+SELECT s.first_name, s.last_name, c.title, c.price, t.*
+ FROM student_course sc 
+	INNER JOIN student s ON s.id = sc.student_id
+    INNER JOIN course c ON c.id = sc.course_id
+    INNER JOIN teacher t ON t.id = c.teacher_id;
