@@ -3,3 +3,8 @@
 ONLINE/
 RemoteSystemsTempFiles/
 *.jar
+.recommenders/
+.settings/
+target/
+.classpath
+.project
