@@ -1,11 +1,6 @@
 package ua.logos;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class Main {
 
@@ -15,7 +10,8 @@ public class Main {
 		String dbUrl = "jdbc:mysql://localhost:3306/university?useSSL=false";
 		String username = "zavada";
 		String password = "zavada";
-		
+
+		// Class.forName("com.mysql.jdbc.Driver");
 		conn = DriverManager.getConnection(dbUrl, username, password);
 		System.out.println("Connected? " + !conn.isClosed());
 		
