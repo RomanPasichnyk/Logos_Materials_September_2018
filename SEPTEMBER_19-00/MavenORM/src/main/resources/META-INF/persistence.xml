@@ -11,7 +11,7 @@
 				value="jdbc:mysql://localhost:3306/online_course?useSSL=false&amp;serverTimezone=UTC" />
 			<property name="hibernate.connection.username" value="zavada" />
 			<property name="hibernate.connection.password" value="zavada" />
-			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL57Dialect" />
 			
 			<!-- update, create, create-drop -->
 			<property name="hibernate.hbm2ddl.auto" value="update" />
