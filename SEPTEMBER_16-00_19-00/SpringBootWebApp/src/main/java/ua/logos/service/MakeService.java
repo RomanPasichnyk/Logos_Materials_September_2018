@@ -2,13 +2,13 @@ package ua.logos.service;
 
 import java.util.List;
 
-import ua.logos.entity.MakeEntity;
+import ua.logos.domain.MakeDTO;
 
 public interface MakeService {
 
-	void saveMake(MakeEntity entity);
+	void saveMake(MakeDTO dto);
 	
-	MakeEntity getMakeById(Long id);
+	MakeDTO getMakeById(Long id);
 	
-	List<MakeEntity> getAllMakes();
+	List<MakeDTO> getAllMakes();
 }

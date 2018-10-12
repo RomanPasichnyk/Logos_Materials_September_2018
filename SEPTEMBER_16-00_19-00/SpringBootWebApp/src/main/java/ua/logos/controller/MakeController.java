@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import ua.logos.domain.MakeDTO;
 import ua.logos.entity.MakeEntity;
 import ua.logos.service.MakeService;
 
@@ -26,34 +27,29 @@ public class MakeController {
 	}
 	
 	@PostMapping("/make/create")
-	public ResponseEntity<Void> createMake(@RequestBody MakeEntity entity) {
+	public ResponseEntity<Void> createMake(@RequestBody MakeDTO dto) {
 		
-		System.out.println(entity.getName());
-		System.out.println(entity.getShortName());
+		System.out.println(dto.getName());
+		System.out.println(dto.getShortName());
 		
-		makeService.saveMake(entity);
+		makeService.saveMake(dto);
 		return new ResponseEntity<>(HttpStatus.CREATED); // code - 201
 	}
 	
 	@GetMapping("/make/all")
-	public ResponseEntity<List<MakeEntity>> getAllMakes() {
-		List<MakeEntity> entities = makeService.getAllMakes();
-	
-		return new ResponseEntity<List<MakeEntity>>(entities, HttpStatus.OK);
+	public ResponseEntity<List<MakeDTO>> getAllMakes() {
+		List<MakeDTO> dtos = makeService.getAllMakes();
+		return new ResponseEntity<List<MakeDTO>>(dtos, HttpStatus.OK);
 	}
 	
 	@GetMapping("/make/{makeId}")
-	public ResponseEntity<MakeEntity> getMakeById(
+	public ResponseEntity<MakeDTO> getMakeById(
 				@PathVariable("makeId") Long id
 			) {
 		System.out.println("Make ID: " + id);
 		
-		MakeEntity make = makeService.getMakeById(id);
+		MakeDTO make = makeService.getMakeById(id);
 		
-		if(make == null) {
-			return new ResponseEntity<MakeEntity>(HttpStatus.NOT_FOUND);
-		}
-		
-		return new ResponseEntity<MakeEntity>(make, HttpStatus.OK);
+		return new ResponseEntity<MakeDTO>(make, HttpStatus.OK);
 	}
 }
