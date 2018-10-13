@@ -1,0 +1,157 @@
+package testJDBC;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.TreeMap;
+
+public class Main {
+
+	private static Connection conn;
+	private static String PATH = System.getProperty("user.dir");
+	private static String SEPARATOR = System.getProperty("file.separator");
+	
+	public static void main(String[] args) throws SQLException, IOException {
+		String url = "jdbc:mysql://localhost:3306/test?useSSL=false";
+		String username = "zavada";
+		String password = "zavada";
+		
+		conn = DriverManager.getConnection(url, username, password);
+		
+		createTables();
+		createCountry();
+		createCity();
+		// System.out.println(PATH);
+		/*readFile("user").forEach(s -> {
+			String[] arr = s.split(" ");
+			System.out.println(arr[0] + " # " + arr[1]);
+		});*/
+		
+		conn.close();
+	}
+	
+	private static Map<Integer, String> getCountries() throws SQLException {
+		String countryQuery = "SELECT * FROM country;";
+		
+		Map<Integer, String> map = new TreeMap<>();
+		PreparedStatement pstmt = conn.prepareStatement(countryQuery);
+		ResultSet rs = pstmt.executeQuery();
+		
+		while(rs.next()) {
+			map.put(rs.getInt("id"), rs.getString("name"));
+		}
+		
+		return map;
+	}
+	
+	private static void createCity() throws SQLException, IOException {		
+		Map<Integer, String> map = getCountries();
+		List<String> cities = readFile("city");
+		Random random = new Random();
+		
+		String cityQuery = "INSERT INTO city(name, country_id) VALUES(?, ?);";
+		PreparedStatement pstmt = conn.prepareStatement(cityQuery);
+		
+		map.forEach((k, v) -> {
+			int maxValue = random.nextInt(10) + 3;
+			for(int i = 1; i < maxValue; i++) {
+				try {
+					String cityName = cities.get(random.nextInt(cities.size() - 1));
+					pstmt.setString(1, cityName);
+					pstmt.setInt(2, k);
+					
+					pstmt.executeUpdate();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		pstmt.close();
+	}
+	
+	private static void createCountry() throws SQLException, IOException {
+		String query = "INSERT INTO country(name) VALUES(?);";
+		
+		PreparedStatement pstmt = conn.prepareStatement(query);
+		
+		readFile("country").forEach(c -> {
+			try {
+				pstmt.setString(1, c);
+				pstmt.executeUpdate();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		});
+		
+		pstmt.close();
+	}
+	
+	private static void createTables() throws SQLException {
+		String countryQuery = "CREATE TABLE country("
+				+ "id INT PRIMARY KEY AUTO_INCREMENT,"
+				+ "name VARCHAR(100) NOT NULL"
+				+ ");";
+		
+		String cityQuery = "CREATE TABLE city("
+				+ "id INT PRIMARY KEY AUTO_INCREMENT,"
+				+ "name VARCHAR(100) NOT NULL,"
+				+ "country_id INT NOT NULL"
+				+ ");";
+		
+		String userQuery = "CREATE TABLE user("
+				+ "id INT PRIMARY KEY AUTO_INCREMENT,"
+				+ "firstName VARCHAR(50) NOT NULL,"
+				+ "lastName VARCHAR(50) NOT NULL,"
+				+ "city_id INT NOT NULL"
+				+ ");";
+		
+		String fkCountryCity = "ALTER TABLE city ADD FOREIGN KEY (country_id) REFERENCES country(id);";
+		String fkUserCountry = "ALTER TABLE user ADD FOREIGN KEY (city_id) REFERENCES city(id);";
+		
+		String dropCountry = "DROP TABLE IF EXISTS country;";
+		String dropCity = "DROP TABLE IF EXISTS city;";
+		String dropUser = "DROP TABLE IF EXISTS user;";
+		
+		Statement stmt = conn.createStatement();
+		stmt.execute(dropUser);
+		stmt.execute(dropCity);
+		stmt.execute(dropCountry);
+		
+		stmt.execute(countryQuery);
+		stmt.execute(cityQuery);
+		stmt.execute(userQuery);
+		stmt.execute(fkCountryCity);
+		stmt.execute(fkUserCountry);
+		
+		stmt.close();
+	}
+	
+	private static List<String> readFile(String fileName) throws IOException {
+		BufferedReader reader = null;
+		List<String> lines = new ArrayList<>();
+		try {
+			reader = new BufferedReader(new FileReader(PATH + SEPARATOR + fileName + ".txt"));
+		
+			while(reader.readLine() != null) {
+				lines.add(reader.readLine());
+			}
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return lines;
+	}
+
+}

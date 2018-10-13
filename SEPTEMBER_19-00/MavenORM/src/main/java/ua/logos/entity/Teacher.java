@@ -8,13 +8,19 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString(callSuper = true, exclude = {"courses", "teacherDetails"})
+@AllArgsConstructor
+@Builder
 
 @Entity
 @Table(name = "teachers")
